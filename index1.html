@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fest Entry Pass Registration - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        .demo-badge {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+            font-size: 14px;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .entry-pass {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            border: 3px solid #fbbf24;
+        }
+        @media print {
+            body * { visibility: hidden; }
+            .entry-pass, .entry-pass * { visibility: visible; }
+            .entry-pass { position: absolute; top: 0; left: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="demo-badge">DEMO VERSION</div>
+    
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">🎉 College Fest 2024</h1>
+            <p class="text-xl text-white opacity-90">Entry Pass Registration</p>
+        </div>
+
+        <!-- Registration Section -->
+        <div id="registrationSection" class="max-w-4xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Payment QR Code -->
+                <div class="bg-white rounded-xl p-8 card-shadow">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Step 1: Make Payment</h2>
+                    <div class="text-center">
+                        <div class="bg-gray-100 p-6 rounded-lg mb-4">
+                            <canvas id="paymentQR" class="mx-auto"></canvas>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <p class="text-lg font-semibold text-blue-800">Entry Fee: ₹200</p>
+                            <p class="text-sm text-blue-600 mt-2">Scan QR code with any UPI app</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration Form -->
+                <div class="bg-white rounded-xl p-8 card-shadow">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Step 2: Fill Registration Form</h2>
+                    <form id="registrationForm" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Student Name *</label>
+                            <input type="text" id="studentName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Roll Number *</label>
+                            <input type="text" id="rollNo" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Section *</label>
+                            <select id="section" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Select Section</option>
+                                <option value="A">Section A</option>
+                                <option value="B">Section B</option>
+                                <option value="C">Section C</option>
+                                <option value="D">Section D</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Department *</label>
+                            <select id="department" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Select Department</option>
+                                <option value="Computer Science">Computer Science</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Mechanical">Mechanical</option>
+                                <option value="Civil">Civil</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Chemical">Chemical</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Year *</label>
+                            <select id="year" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="">Select Year</option>
+                                <option value="1st Year">1st Year</option>
+                                <option value="2nd Year">2nd Year</option>
+                                <option value="3rd Year">3rd Year</option>
+                                <option value="4th Year">4th Year</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <input type="tel" id="phone" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Transaction ID *</label>
+                            <input type="text" id="transactionId" required placeholder="Enter UPI transaction ID" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                            Generate Entry Pass
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry Pass Display -->
+        <div id="entryPassSection" class="max-w-2xl mx-auto mt-8 hidden">
+            <div class="entry-pass rounded-xl p-8 text-white relative overflow-hidden">
+                <!-- Background Pattern -->
+                <div class="absolute inset-0 opacity-10">
+                    <div class="absolute top-4 left-4 text-6xl">🎉</div>
+                    <div class="absolute top-4 right-4 text-6xl">🎊</div>
+                    <div class="absolute bottom-4 left-4 text-6xl">🎭</div>
+                    <div class="absolute bottom-4 right-4 text-6xl">🎪</div>
+                </div>
+
+                <!-- Pass Content -->
+                <div class="relative z-10">
+                    <div class="text-center mb-6">
+                        <h1 class="text-3xl font-bold mb-2">🎉 COLLEGE FEST 2024</h1>
+                        <p class="text-xl font-semibold bg-yellow-400 text-purple-800 px-4 py-2 rounded-full inline-block">ENTRY PASS</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-3">
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <p class="text-sm opacity-80">Student Name</p>
+                                <p class="text-lg font-bold" id="passName">-</p>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <p class="text-sm opacity-80">Roll Number</p>
+                                <p class="text-lg font-bold" id="passRoll">-</p>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                    <p class="text-sm opacity-80">Section</p>
+                                    <p class="text-lg font-bold" id="passSection">-</p>
+                                </div>
+                                <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                    <p class="text-sm opacity-80">Year</p>
+                                    <p class="text-lg font-bold" id="passYear">-</p>
+                                </div>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <p class="text-sm opacity-80">Department</p>
+                                <p class="text-lg font-bold" id="passDepartment">-</p>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <div class="bg-white p-4 rounded-lg mb-4">
+                                <canvas id="entryQR" class="mx-auto"></canvas>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-3 rounded-lg">
+                                <p class="text-sm opacity-80">Pass ID</p>
+                                <p class="text-lg font-bold" id="passId">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 text-center">
+                        <div class="bg-yellow-400 text-purple-800 p-3 rounded-lg font-bold">
+                            <p class="text-sm">Valid for all fest events • December 15-17, 2024</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4 mt-6 justify-center">
+                <button onclick="downloadPass()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    📱 Download Pass
+                </button>
+                <button onclick="printPass()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    🖨️ Print Pass
+                </button>
+                <button onclick="resetForm()" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200">
+                    🔄 New Registration
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate payment QR code on page load
+        window.onload = function() {
+            const paymentData = "upi://pay?pa=fest2024@paytm&pn=College Fest 2024&am=200&cu=INR&tn=Fest Entry Fee";
+            QRCode.toCanvas(document.getElementById('paymentQR'), paymentData, {
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff'
+            });
+        };
+
+        // Handle form submission
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('studentName').value,
+                rollNo: document.getElementById('rollNo').value,
+                section: document.getElementById('section').value,
+                department: document.getElementById('department').value,
+                year: document.getElementById('year').value,
+                phone: document.getElementById('phone').value,
+                transactionId: document.getElementById('transactionId').value
+            };
+
+            // Generate unique pass ID
+            const passId = 'FEST2024-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+
+            // Populate entry pass
+            document.getElementById('passName').textContent = formData.name;
+            document.getElementById('passRoll').textContent = formData.rollNo;
+            document.getElementById('passSection').textContent = formData.section;
+            document.getElementById('passDepartment').textContent = formData.department;
+            document.getElementById('passYear').textContent = formData.year;
+            document.getElementById('passId').textContent = passId;
+
+            // Generate entry QR code
+            const entryData = JSON.stringify({
+                passId: passId,
+                name: formData.name,
+                rollNo: formData.rollNo,
+                section: formData.section,
+                department: formData.department,
+                year: formData.year,
+                transactionId: formData.transactionId,
+                timestamp: new Date().toISOString()
+            });
+
+            QRCode.toCanvas(document.getElementById('entryQR'), entryData, {
+                width: 150,
+                height: 150,
+                colorDark: '#000000',
+                colorLight: '#ffffff'
+            });
+
+            // Show entry pass and hide registration
+            document.getElementById('registrationSection').style.display = 'none';
+            document.getElementById('entryPassSection').classList.remove('hidden');
+
+            // Scroll to pass
+            document.getElementById('entryPassSection').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        function downloadPass() {
+            // Create a canvas to combine all pass elements
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 800;
+            canvas.height = 600;
+
+            // Create gradient background
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#4f46e5');
+            gradient.addColorStop(1, '#7c3aed');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Add border
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(3, 3, canvas.width - 6, canvas.height - 6);
+
+            // Add text content
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎉 COLLEGE FEST 2024', canvas.width / 2, 60);
+
+            ctx.font = 'bold 24px Arial';
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('ENTRY PASS', canvas.width / 2, 100);
+
+            // Add student details
+            ctx.fillStyle = 'white';
+            ctx.font = '18px Arial';
+            ctx.textAlign = 'left';
+            const details = [
+                `Name: ${document.getElementById('passName').textContent}`,
+                `Roll No: ${document.getElementById('passRoll').textContent}`,
+                `Section: ${document.getElementById('passSection').textContent}`,
+                `Department: ${document.getElementById('passDepartment').textContent}`,
+                `Year: ${document.getElementById('passYear').textContent}`,
+                `Pass ID: ${document.getElementById('passId').textContent}`
+            ];
+
+            details.forEach((detail, index) => {
+                ctx.fillText(detail, 50, 160 + (index * 30));
+            });
+
+            // Add QR code
+            const qrCanvas = document.getElementById('entryQR');
+            ctx.drawImage(qrCanvas, canvas.width - 200, 150, 150, 150);
+
+            // Add validity info
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('Valid for all fest events • December 15-17, 2024', canvas.width / 2, canvas.height - 50);
+
+            // Download the image
+            const link = document.createElement('a');
+            link.download = `fest-pass-${document.getElementById('passId').textContent}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function printPass() {
+            window.print();
+        }
+
+        function resetForm() {
+            // Reset form
+            document.getElementById('registrationForm').reset();
+            
+            // Show registration section and hide pass
+            document.getElementById('registrationSection').style.display = 'block';
+            document.getElementById('entryPassSection').classList.add('hidden');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981a796cd08f7f4d',t:'MTc1ODI5OTQ5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
